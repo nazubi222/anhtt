@@ -13,9 +13,9 @@ void setup()
 }
 
 void loop() {
-  lcd.setCursor(0,1); // set the cursor to column 15, line 1
+  lcd.setCursor(0,1);
   hienthichuoi(0,0,S);
- // lcd.clear(); //Clears the LCD screen and positions the cursor in the upper-left corner.
+
  }
 
 void hienthichuoi(int cot, int dong, String chuoi)
