@@ -3,7 +3,7 @@
 #include <LiquidCrystal_I2C.h>
 
 String S="Xin Chao Cac Ban"; //the string to print on the LCD
-// initialize the library with the numbers of the interface pins
+
 LiquidCrystal_I2C lcd(0x27,16,2); // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 void setup()
