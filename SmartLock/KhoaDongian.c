@@ -1,4 +1,5 @@
 #include<Keypad.h>
+#include <EEPROM.h>
  
 const byte rows = 4; //số hàng
 const byte columns = 3; //số cột
@@ -20,13 +21,18 @@ char keys[rows][columns] =
  
 byte rowPins[rows] = {5, 6, 7, 8}; //Cách nối chân với Arduino
 byte columnPins[columns] = {9, 10, 11};
+int changePassButton = 12;
  
 //cài đặt thư viện keypad
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, columnPins, rows, columns);
 void setup() {
+  pinMode(changePassButton, INPUT_PULLUP);
+  for(i = 0; i < 6; i++) pass[i] = EEPROM.read(i); 
+	
   Serial.begin(9600);//bật serial, baudrate 9600
-   Serial.println("Enter password");
+  Serial.println("Enter password");
 }
+
 void loop() {  
   char temp = keypad.getKey();
  
@@ -44,8 +50,13 @@ void loop() {
       }
     if(i == 6) check();
     if(key == '*') clear(); // Bấm * để xóa màn hình
-    if(key == '#') check(); // Bấm # để mở khóa
-  }
+    if(key == '#'&& check() == 1) 
+         printf("Unlocked");
+    else printf("Wrong password");// Bấm # để mở khóa
+
+    if(digitalRead(changePassButton) == 0 && check() == 1) changePassword();  
+
+}
   delay(100);
 }
 
@@ -56,11 +67,16 @@ void clear(){
   i=0;
 }
 
-void check(){
+int check(){
   int kt = 1;
   for(i=0; i<6;i++)
     if(in[i] != pass[i]) kt=0;
-  if (kt == 1) Serial.println("Unlocked");
-  if (kt == 0) Serial.println("Wrong password");
   i=0;
+  return kt;
 }
+
+void changePassword(){
+
+
+}  
+
