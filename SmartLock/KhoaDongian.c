@@ -1,3 +1,4 @@
+
 #include<Keypad.h>
 #include <EEPROM.h>
  
@@ -9,7 +10,7 @@ char key = 0;
 int in[6] = {};
 int pass[6] = {2,7,0,9,5,6}; //Pass mặc định là 270956;
 int i=0;
-
+int passwordMode;
 //Định nghĩa các giá trị trả về
 char keys[rows][columns] =
 {
@@ -26,8 +27,9 @@ int changePassButton = 12;
 //cài đặt thư viện keypad
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, columnPins, rows, columns);
 void setup() {
+  passwordMode = 0;
   pinMode(changePassButton, INPUT_PULLUP);
-  for(i = 0; i < 6; i++) pass[i] = EEPROM.read(i); 
+  //for(i = 0; i < 6; i++) pass[i] = EEPROM.read(i); 
 	
   Serial.begin(9600);//bật serial, baudrate 9600
   Serial.println("Enter password");
@@ -43,20 +45,38 @@ void loop() {
   }
   if ((int)keypad.getState() ==  RELEASED) {
     //Xuất lên Máy tính để xem kết quả
-    if(key>=48 && key<=57){
-      Serial.println('*');
-      in[i] = (int)key - 48;
-      i++;
-      }
-    if(i == 6) check();
-    if(key == '*') clear(); // Bấm * để xóa màn hình
-    if(key == '#'&& check() == 1) 
-         printf("Unlocked");
-    else printf("Wrong password");// Bấm # để mở khóa
-
-    if(digitalRead(changePassButton) == 0 && check() == 1) changePassword();  
-
-}
+  if(key>=48 && key<=57){
+    Serial.println('*');
+    in[i] = (int)key - 48;
+    i++;
+    }
+  if(key == '*') clear(); // Bấm * để xóa màn hình
+  if(key == '#')
+    {
+    //Serial.println(check);
+    if(check() == 1)        
+      {if(passwordMode == 0) 
+        Serial.println("Unlocked");
+      if(passwordMode == 1)changePassword();}
+    else Serial.println("Wrong password");// Bấm # để mở khóa
+    }
+  }
+  if(digitalRead(changePassButton) == 0) 
+      if(check() == 1)
+        if(passwordMode == 0){
+	   delay(500);
+           Serial.println("Enter password mode");
+           passwordMode = 1;
+           i=0;
+           }
+        else{
+          delay(500);
+          Serial.println("Exit password mode");
+          passwordMode = 0;
+          i=0;
+        }
+      else {Serial.println("Wrong password"); 
+            i=0;}
   delay(100);
 }
 
@@ -76,7 +96,11 @@ int check(){
 }
 
 void changePassword(){
-
-
+  for(int i = 0; i < 6; i++){
+    EEPROM.write(i, in[i]);
+    pass[i] = EEPROM.read(i);
+    }
+  Serial.println("Password changed");
+  passwordMode = 0;
 }  
 
