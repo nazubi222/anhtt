@@ -2,7 +2,7 @@
 #include <EEPROM.h>
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-
+// Sơ đồ lắp đặt khoá: https://github.com/nazubi222/anhtt/blob/main/SmartLock/sodokhoa.png
 LiquidCrystal_I2C lcd(32,16,2); 
 const byte rows = 4; //số hàng
 const byte columns = 4; //số cột
